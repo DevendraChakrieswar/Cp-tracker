@@ -75,15 +75,15 @@ router.get('/all', async (req, res) => {
     }
 });
 
-const saveDataToFile = async (data) => {
-    fs.writeFileSync('user_data.json', JSON.stringify(data, null, 2));
-};
+// const saveDataToFile = async (data) => {
+//     fs.writeFileSync('user_data.json', JSON.stringify(data, null, 2));
+// };
 
 
 router.get('/all-users', async (req, res) => {
     try {
         const data = await fetchAllUsersData();
-        saveDataToFile(data); // Save data to file
+        // saveDataToFile(data); // Save data to file
         res.json(data);
     } catch (error) {
         res.status(500).json({ error: error.message });
