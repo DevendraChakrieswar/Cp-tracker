@@ -3,6 +3,7 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 import Navbar from './components/common/NavBar'
+import Footer from './components/common/Footer'
 
 function App() {
 
@@ -12,7 +13,10 @@ function App() {
 
       <div className='w-screen min-h-screen flex flex-col'>
         <Navbar/>
-        
+
+
+
+        {/* <Footer/> */}
       </div>
 
       
