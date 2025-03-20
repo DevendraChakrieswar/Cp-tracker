@@ -4,6 +4,8 @@ import viteLogo from '/vite.svg'
 import './App.css'
 import Navbar from './components/common/NavBar'
 import Footer from './components/common/Footer'
+import StudentReport from './components/common/StudentReport'
+import CompetitiveReport from './components/common/CompetitiveReport'
 
 function App() {
 
@@ -13,6 +15,7 @@ function App() {
 
       <div className='w-screen min-h-screen flex flex-col'>
         <Navbar/>
+        <CompetitiveReport/>
 
 
 
