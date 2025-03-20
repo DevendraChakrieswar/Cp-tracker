@@ -1,3 +1,8 @@
+const fs = require('fs');
+const USERS = JSON.parse(fs.readFileSync('./Data/testusers.json', 'utf8'));
+
+
+
 // fetching leetcode data
 
 async function fetchLeetCodeContestsData(username) {
@@ -149,9 +154,6 @@ const fetchCodeforcesContest = async (username) => {
 };
 
 
-const fs = require('fs');
-
-const USERS = JSON.parse(fs.readFileSync('./Data/testusers.json', 'utf8'));
 
 const {scrapeCodeChef} = require('./scrapeCodeChef')
 

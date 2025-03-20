@@ -1,11 +1,13 @@
 const express = require('express');
 const router = express.Router();
+const fs = require('fs');
+const cron = require('node-cron');
+const path = require('path'); 
 const { scrapeCodeChef } = require('../Scripts/scrapeCodeChef');
 const {fetchLeetCodeContestsData} = require('../Scripts/fetchAPIs');
 const {fetchCodeforcesData} = require('../Scripts/fetchAPIs');
 const {fetchCodeforcesContest} = require('../Scripts/fetchAPIs');
-const {fetchAllUsersData} = require('../Scripts/fetchAPIs')
-const fs = require('fs');
+const {fetchAllUsersData} = require('../Scripts/fetchAPIs');
 
 
 // endpoint for codechef
@@ -75,20 +77,40 @@ router.get('/all', async (req, res) => {
     }
 });
 
-// const saveDataToFile = async (data) => {
-//     fs.writeFileSync('user_data.json', JSON.stringify(data, null, 2));
-// };
+const saveDataToFile = async (data) => {
+    try {
+        const filePath = path.join(__dirname, '../Data/user_data.json');
+        fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+        console.log(`✅ Data saved successfully at: ${filePath}`);
+    } catch (error) {
+        console.error('❌ Error saving data:', error);
+    }
+};
 
 
 router.get('/all-users', async (req, res) => {
     try {
         const data = await fetchAllUsersData();
-        // saveDataToFile(data); // Save data to file
         res.json(data);
+        saveDataToFile(data);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
+
+
+async function saveData() {
+    console.log("Fetching and updating data...");
+    const userData = await fetchAllUsersData();
+    fs.writeFileSync('./Data/userData.json', JSON.stringify(userData, null, 2));
+    console.log("Data saved successfully.");
+}
+
+// Schedule Data Fetching Every 6 Hours
+cron.schedule('0 */6 * * *', saveData);
+
+// Run immediately on script start
+// saveData();
 
 
 
