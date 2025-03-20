@@ -14,6 +14,7 @@ function App() {
       <div className='w-screen min-h-screen flex flex-col'>
         <Navbar/>
 
+        
 
 
         {/* <Footer/> */}
