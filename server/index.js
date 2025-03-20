@@ -5,6 +5,7 @@ const codingRoutes = require('./routes/codingroutes');
 
 const app = express();
 app.use(cors());
+
 app.use('/api', codingRoutes);
 
 const PORT = process.env.PORT || 5000;
