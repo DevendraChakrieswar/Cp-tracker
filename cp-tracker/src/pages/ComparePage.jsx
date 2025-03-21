@@ -75,7 +75,7 @@ const CompareForm = () => {
               className="flex-1 bg-white rounded-lg shadow-md p-6"
             >
               <h2 className="text-xl font-semibold mb-4">
-                {personKey === "person1" ? "Person 1" : "Person 2"}
+                {personKey === "person1" ? "User 1" : "User 2"}
               </h2>
 
               <div className="space-y-4">
