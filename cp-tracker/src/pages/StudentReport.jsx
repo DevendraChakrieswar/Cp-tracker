@@ -84,7 +84,7 @@ const BatchReport = ({ batchData, isFetched }) => {
     <div className="min-h-screen bg-gray-50 p-8">
       <form onSubmit={handleSubmit}>
         <div className="mx-auto max-w-4xl bg-white p-6 shadow-sm">
-          <h1 className="mb-8 text-2xl font-bold text-gray-800">Batch Report</h1>
+          <h1 className="mb-8 text-2xl font-bold text-gray-800">Student Report</h1>
 
           <div className="mb-6">
             <label className="mb-2 block text-sm font-medium text-gray-600">
@@ -94,7 +94,7 @@ const BatchReport = ({ batchData, isFetched }) => {
               type="text"
               value={rollNo}
               onChange={(e) => setRollNo(e.target.value)}
-              className="rounded-md border p-2 text-sm w-full"
+              className="rounded-md border p-2 text-sm w-[50%]"
               placeholder="Enter Roll Number"
             />
           </div>
