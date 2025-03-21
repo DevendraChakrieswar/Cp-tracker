@@ -30,10 +30,26 @@ const BatchReport = ({ batchData, isFetched }) => {
   const [isformSub, setisformSub] = useState(false);
   const [rawData, setRawData] = useState([]);
 
+  const [isLeet, setisLeet] = useState(false);
+  const [isChef, setisChef] = useState(false)
+  const [isCode, setisCode] = useState(false)
+
   const handlePlatformToggle = (platform) => {
     setSelectedPlatforms((prev) => {
       if (platform === "All") {
         return ["All"];
+      }
+
+      if(platform === "Codechef") {
+        setisChef(true);
+      }
+
+      if(platform === "Leetcode") {
+        setisLeet(true);
+      }
+      
+      if(platform == "Codeforces") {
+        setisCode(true);
       }
 
       const newSelection = prev.includes(platform)
@@ -243,6 +259,9 @@ const BatchReport = ({ batchData, isFetched }) => {
               ? "all"
               : selectedPlatforms[0].toLowerCase()
           }
+          isLeet={isLeet}
+          isCode={isCode}
+          isChef={isChef}
         />
       )}
     </div>
