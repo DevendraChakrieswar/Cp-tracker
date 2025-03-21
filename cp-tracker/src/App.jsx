@@ -8,7 +8,10 @@ import { Route, Routes } from 'react-router-dom'
 import BatchReport from './pages/BatchReport'
 import { fetchFromDB } from './utils/fetchFromDB/fetchDB'
 import StudentReport from './pages/StudentReport'
+
 import CPReport from './pages/CpReport'
+import ComparePage from './pages/ComparePage'
+
 
 function App() {
 
@@ -34,8 +37,8 @@ function App() {
         <Routes>
           <Route path='/batch-report' element={<BatchReport batchData={batchData} isFetched={isFetched}/>}></Route>
           <Route path='/student-report' element={<StudentReport batchData={batchData}/>}></Route>
-          <Route path='/cp-report' element={<CPReport/>}></Route>
 
+          <Route path='/compare' element={<ComparePage />} />
 
         </Routes>
 
