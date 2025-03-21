@@ -32,7 +32,7 @@ function App() {
         
         <Routes>
           <Route path='/batch-report' element={<BatchReport batchData={batchData} isFetched={isFetched}/>}></Route>
-          <Route path='/student-report' element={<StudentReport/>}></Route>
+          <Route path='/student-report' element={<StudentReport batchData={batchData}/>}></Route>
         </Routes>
 
 
