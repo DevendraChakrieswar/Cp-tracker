@@ -29,14 +29,10 @@ function App() {
 
       <div className='w-screen min-h-screen flex flex-col'>
         <Navbar/>
-<<<<<<< HEAD
-======
-
->>>>>>> 32a60ce46cb8402de2ed3a3e84116d50b976b6b9
         
         <Routes>
           <Route path='/batch-report' element={<BatchReport batchData={batchData} isFetched={isFetched}/>}></Route>
-          <Route path='/student-report' element={<StudentReport/>}></Route>
+          <Route path='/student-report' element={<StudentReport batchData={batchData}/>}></Route>
         </Routes>
 
 

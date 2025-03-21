@@ -1,6 +1,7 @@
 [
   {
-    "username": "22501a1220",
+    "rollno": "22501a1220",
+    "name": "Devendra",
     "leetcode": {
       "username": "devendra9999",
       "data": {
@@ -3155,7 +3156,8 @@
     }
   },
   {
-    "username": "22501a1214",
+    "rollno": "22501a1214",
+    "name": "Sanjay",
     "leetcode": {
       "username": "pBUWNzSnsW",
       "data": {
@@ -5219,7 +5221,8 @@
     }
   },
   {
-    "username": "22501a1244",
+    "rollno": "22501a1244",
+    "name": "Riteesh",
     "leetcode": {
       "username": "Riteesh17",
       "data": {

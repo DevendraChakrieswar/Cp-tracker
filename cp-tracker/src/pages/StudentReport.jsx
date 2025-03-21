@@ -1,190 +1,149 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import { useState } from "react";
+import { toast } from "react-hot-toast";
+import {
+  fetchLeetcode,
+  fetchCodechef,
+  fetchCodeforces,
+} from "../utils/filters/filterSR";
+import BatchTable from "../components/Tables/DataTable";
 
-const StudentReport = () => {
-  const [rollNo, setRollNo] = useState('');
-  const [platform, setPlatform] = useState('All');
-  const [reportData, setReportData] = useState(null);
-  const [loading, setLoading] = useState(false);
+const BatchReport = ({ batchData, isFetched }) => {
+  const [rollNo, setRollNo] = useState("22501a1201");
+  const [selectedPlatforms, setSelectedPlatforms] = useState(["All"]);
+  const [filteredContests, setFilteredContests] = useState([]);
+  const [isFormSub, setIsFormSub] = useState(false);
+  const [rawData, setRawData] = useState([]);
 
-  const handleGetReport = async () => {
+  const handlePlatformToggle = (platform) => {
+    setSelectedPlatforms((prev) => {
+      if (platform === "All") return ["All"];
+      const newSelection = prev.includes(platform)
+        ? prev.filter((p) => p !== platform)
+        : [...prev.filter((p) => p !== "All"), platform];
+      return newSelection.length === 3 ? ["All"] : newSelection;
+    });
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
     if (!rollNo) {
-      alert('Please enter a Roll Number or Username');
+      toast.error("Roll number is required!");
       return;
     }
 
-    setLoading(true);
-    setReportData(null);
-
     try {
-      let apiUrl = '';
+      let studentsData = batchData;
+      setRawData(studentsData);
 
-      // API routes based on the selected platform
-      switch (platform) {
-        case 'CodeChef':
-          apiUrl = `http://localhost:5000/api/codechef/${rollNo}`;
-          break;
-        case 'LeetCode':
-          apiUrl = `http://localhost:5000/api/leetcode/${rollNo}`;
-          break;
-        case 'Codeforces':
-          apiUrl = `http://localhost:5000/api/codeforces/${rollNo}`;
-          break;
-        case 'All':
-        default:
-          apiUrl = `http://localhost:5000/api/all?codechef=${rollNo}&leetcode=${rollNo}&codeforces=${rollNo}`;
+      let student = studentsData.find(
+        (student) => student.rollno === rollNo.trim()
+      );
+
+      if (!student) {
+        toast.error("Student not found with this Roll Number!");
+        setFilteredContests([]);
+        setIsFormSub(true);
+        return;
       }
 
-      const response = await axios.get(apiUrl);
-      setReportData(response.data);
+      let fetchedData = {
+        student,
+        contests: {
+          leetcode: fetchLeetcode(
+            student.leetcode?.data?.userContestRankingHistory || []
+          ),
+          codechef: fetchCodechef(student.codechef.contests || []),
+          codeforces: fetchCodeforces(
+            student.codeforces?.attendedContests || []
+          ),
+        },
+      };
+
+      setFilteredContests([fetchedData]);
+
+      const hasContests =
+        fetchedData.contests.leetcode.length > 0 ||
+        fetchedData.contests.codechef.length > 0 ||
+        fetchedData.contests.codeforces.length > 0;
+
+      if (!hasContests) {
+        toast.success("No contests found for this student!");
+      } else {
+        toast.success("Report generated successfully!");
+      }
+
+      setIsFormSub(true);
     } catch (error) {
-      console.error('Error fetching report:', error);
-      setReportData({ error: 'Failed to fetch report.' });
-    } finally {
-      setLoading(false);
+      console.error("Error generating report:", error);
+      toast.error("Something went wrong!");
     }
   };
 
   return (
-    <div className="max-w-4xl  mt-10 p-6 bg-white shadow-lg rounded-lg">
-      <h2 className="text-3xl font-bold text-blue-600 mb-6 text-center">Student Report</h2>
+    <div className="min-h-screen bg-gray-50 p-8">
+      <form onSubmit={handleSubmit}>
+        <div className="mx-auto max-w-4xl bg-white p-6 shadow-sm">
+          <h1 className="mb-8 text-2xl font-bold text-gray-800">Batch Report</h1>
 
-      <label className="block text-blue-700 mb-2">Roll Number / Username</label>
-      <input
-        type="text"
-        value={rollNo}
-        onChange={(e) => setRollNo(e.target.value)}
-        className="w-full p-3 border rounded mb-4"
-        placeholder="Enter Roll Number or Username"
-      />
+          <div className="mb-6">
+            <label className="mb-2 block text-sm font-medium text-gray-600">
+              Roll Number
+            </label>
+            <input
+              type="text"
+              value={rollNo}
+              onChange={(e) => setRollNo(e.target.value)}
+              className="rounded-md border p-2 text-sm w-full"
+              placeholder="Enter Roll Number"
+            />
+          </div>
 
-      <label className="block text-blue-700 mb-2">Select Platform</label>
-      <select
-        value={platform}
-        onChange={(e) => setPlatform(e.target.value)}
-        className="w-full p-3 border rounded mb-6"
-      >
-        <option value="All">All</option>
-        <option value="CodeChef">CodeChef</option>
-        <option value="LeetCode">LeetCode</option>
-        <option value="Codeforces">Codeforces</option>
-      </select>
+          <div className="mb-6">
+            <label className="mb-2 block text-sm font-medium text-gray-600">
+              Select Platform
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {["All", "Codechef", "Codeforces", "Leetcode"].map((platform) => (
+                <button
+                  key={platform}
+                  type="button"
+                  onClick={() => handlePlatformToggle(platform)}
+                  className={`rounded-full px-3 py-1 text-sm transition-colors hover:cursor-pointer ${
+                    selectedPlatforms.includes(platform)
+                      ? "bg-blue-100 text-blue-700"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  }`}
+                >
+                  {platform}
+                </button>
+              ))}
+            </div>
+          </div>
 
-      <button
-        onClick={handleGetReport}
-        className="w-full bg-blue-500 text-white py-3 rounded hover:bg-blue-600"
-      >
-        {loading ? 'Loading...' : 'Get Report'}
-      </button>
-
-      {/* Render Report */}
-      {reportData && (
-        <div className="mt-8 p-4 bg-gray-100 rounded overflow-x-auto">
-          {reportData.error ? (
-            <p className="text-red-500">{reportData.error}</p>
-          ) : (
-            <>
-              <h3 className="text-xl font-semibold mb-6">Report Data</h3>
-
-              {/* CodeChef Data */}
-              {reportData.codechef && (
-                <div className="mb-6">
-                  <h4 className="font-bold mb-3 text-blue-700">CodeChef</h4>
-                  <table className="w-full border border-gray-300">
-                    <thead className="bg-gray-200">
-                      <tr>
-                        <th className="p-3 border">Rating</th>
-                        <th className="p-3 border">Stars</th>
-                        <th className="p-3 border">Problems Solved</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td className="p-3 border">{reportData.codechef.rating || 'N/A'}</td>
-                        <td className="p-3 border">{reportData.codechef.stars || 'N/A'}</td>
-                        <td className="p-3 border">{reportData.codechef.problems_solved || 'N/A'}</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              )}
-
-              {/* LeetCode Data */}
-              {reportData.leetcode && (
-                <div className="mb-6">
-                  <h4 className="font-bold mb-3 text-yellow-600">LeetCode</h4>
-                  <table className="w-full border border-gray-300">
-                    <thead className="bg-gray-200">
-                      <tr>
-                        <th className="p-3 border">Total Problems Solved</th>
-                        <th className="p-3 border">Ranking</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td className="p-3 border">{reportData.leetcode.totalSolved || 'N/A'}</td>
-                        <td className="p-3 border">{reportData.leetcode.ranking || 'N/A'}</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              )}
-
-              {/* Codeforces Data */}
-              {reportData.codeforces && (
-                <div className="mb-6">
-                  <h4 className="font-bold mb-3 text-purple-700">Codeforces</h4>
-                  <table className="w-full border border-gray-300">
-                    <thead className="bg-gray-200">
-                      <tr>
-                        <th className="p-3 border">Handle</th>
-                        <th className="p-3 border">Max Rating</th>
-                        <th className="p-3 border">Current Rating</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td className="p-3 border">{reportData.codeforces.username || 'N/A'}</td>
-                        <td className="p-3 border">{reportData.codeforces.maxRating || 'N/A'}</td>
-                        <td className="p-3 border">{reportData.codeforces.currentRating || 'N/A'}</td>
-                      </tr>
-                    </tbody>
-                  </table>
-
-                  {/* Optional: Codeforces contests */}
-                  {reportData.codeforces.contests && (
-                    <div className="mt-6">
-                      <h4 className="font-semibold mb-3">Recent Contests</h4>
-                      <table className="w-full border border-gray-300">
-                        <thead className="bg-gray-200">
-                          <tr>
-                            <th className="p-3 border">Contest Name</th>
-                            <th className="p-3 border">Rank</th>
-                            <th className="p-3 border">Old Rating</th>
-                            <th className="p-3 border">New Rating</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {reportData.codeforces.contests.map((contest, index) => (
-                            <tr key={index}>
-                              <td className="p-3 border">{contest.contestName}</td>
-                              <td className="p-3 border">{contest.rank}</td>
-                              <td className="p-3 border">{contest.oldRating}</td>
-                              <td className="p-3 border">{contest.newRating}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  )}
-                </div>
-              )}
-            </>
-          )}
+          <div className="flex w-[40%]">
+            <button
+              type="submit"
+              className="w-full rounded-md bg-green-600 px-4 py-2 text-white hover:bg-green-700 hover:cursor-pointer"
+            >
+              Get Report
+            </button>
+          </div>
         </div>
+      </form>
+
+      {isFormSub && (
+        <BatchTable
+          data={filteredContests}
+          filter={
+            selectedPlatforms.includes("All") || selectedPlatforms.length !== 1
+              ? "all"
+              : selectedPlatforms[0].toLowerCase()
+          }
+        />
       )}
     </div>
   );
 };
 
-export default StudentReport;
+export default BatchReport;
