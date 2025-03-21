@@ -166,7 +166,8 @@ const fetchAllUsersData = async () => {
         ]);
 
         return {
-            username: user.username,
+            rollno: user.rollno,
+            name: user.name,
             leetcode: leetcodeData,
             codeforces: codeforcesData,
             codechef: codechefData

@@ -10,8 +10,8 @@ import BatchTable from "../components/Tables/DataTable";
 
 const BatchReport = ({ batchData, isFetched }) => {
   // const [selectedBatch, setSelectedBatch] = useState("22");
-  const [fromRollNo, setFromRollNo] = useState("");
-  const [toRollNo, setToRollNo] = useState("");
+  const [fromRollNo, setFromRollNo] = useState("22501a1201");
+  const [toRollNo, setToRollNo] = useState("22501a1266");
   const [selectedPlatforms, setSelectedPlatforms] = useState(["All"]);
 
   const todayDate = new Date();
@@ -63,11 +63,19 @@ const BatchReport = ({ batchData, isFetched }) => {
 
       // Filter students based on roll number (username field)
       let students = studentsData.filter((student) => {
-        let roll = parseInt(student.username, 10); // Fix: Using `username`
+        let roll = parseInt(student.rollno, 10); // Fix: Using `username`
         return (
           roll >= parseInt(fromRollNo, 10) && roll <= parseInt(toRollNo, 10)
         );
       });
+
+
+    //   let students = studentsData.filter((student) => {
+    //     let roll = student.roll;
+    //     let fromRollFormatted = fromRollNo.toUpperCase();
+    //     let toRollFormatted = toRollNo.toUpperCase();
+    //     return roll >= fromRollFormatted && roll <= toRollFormatted;
+    // });
 
       console.log("Filtered Students:", students);
       console.log("Roll Number Range:", fromRollNo, "to", toRollNo);

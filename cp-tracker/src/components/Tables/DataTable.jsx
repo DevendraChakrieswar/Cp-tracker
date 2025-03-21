@@ -182,7 +182,7 @@ const DataTable = ({ data, isStudentReport = false, filter = "all" }) => {
                       className="p-4 border text-center align-middle border-gray-300"
                       rowSpan={maxRows}
                     >
-                      {student.username}
+                      {student.rollno}
                     </td>
                     <td
                       className="p-4 border text-center align-middle border-gray-300"
