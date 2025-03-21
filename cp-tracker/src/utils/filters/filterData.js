@@ -1,5 +1,5 @@
 function filterLeetcode(fromDate, toDate, contestsData) {
-    // console.log('contestsData: ', contestsData);
+    console.log('contestsData: ', contestsData);
     if(contestsData === undefined){
         return [];
     }
@@ -13,14 +13,14 @@ function filterLeetcode(fromDate, toDate, contestsData) {
 }
 
 function filterCodechef(fromDate, toDate, contestsData) {
-    // console.log('contestsData: ', contestsData);
+    console.log('contestsData: ', contestsData);
     let startDate = new Date(fromDate);
     let endDate = new Date(toDate);
     let filteredContests = contestsData.filter((contest) => {
-        // console.log('contest: ', contest);
+        console.log('contest: ', contest);
         if (contest.end_date != null) {
             let date = new Date(contest.end_date.split(" ")[0]);
-            // console.log('date: ', date);
+            console.log('date: ', date);
             return date >= startDate && date <= endDate;
         }
     });
@@ -28,6 +28,7 @@ function filterCodechef(fromDate, toDate, contestsData) {
 }
 
 function filterCodeforces(fromDate, toDate, contestsData) {
+    console.log(contestsData);
     let startDate = new Date(fromDate);
     let endDate = new Date(toDate);
     let filteredContests = contestsData.filter((contest) => {

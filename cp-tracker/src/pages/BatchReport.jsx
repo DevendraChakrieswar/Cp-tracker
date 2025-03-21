@@ -8,7 +8,6 @@ import {
 } from "../utils/filters/filterData";
 import BatchTable from "../components/Tables/DataTable";
 
-
 const BatchReport = ({ batchData, isFetched }) => {
   // const [selectedBatch, setSelectedBatch] = useState("22");
   const [fromRollNo, setFromRollNo] = useState("");
@@ -27,6 +26,7 @@ const BatchReport = ({ batchData, isFetched }) => {
 
   const [filteredContests, setfilteredContests] = useState([]);
   const [isformSub, setisformSub] = useState(false);
+  const [rawData, setRawData] = useState([]);
 
   const handlePlatformToggle = (platform) => {
     setSelectedPlatforms((prev) => {
@@ -44,50 +44,64 @@ const BatchReport = ({ batchData, isFetched }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-  
+
     if (!fromRollNo || !toRollNo || !startDate || !endDate) {
       toast.error("All fields are required!");
       return;
     }
-  
+
     if (parseInt(fromRollNo, 10) > parseInt(toRollNo, 10)) {
       toast.error("Enter a valid Roll Number range!");
       return;
     }
-  
+
     try {
       let studentsData = batchData;
-  
+
       console.log("Raw Students Data:", studentsData);
-  
+      setRawData(studentsData);
+
       // Filter students based on roll number (username field)
       let students = studentsData.filter((student) => {
         let roll = parseInt(student.username, 10); // Fix: Using `username`
-        return roll >= parseInt(fromRollNo, 10) && roll <= parseInt(toRollNo, 10);
+        return (
+          roll >= parseInt(fromRollNo, 10) && roll <= parseInt(toRollNo, 10)
+        );
       });
-  
+
       console.log("Filtered Students:", students);
       console.log("Roll Number Range:", fromRollNo, "to", toRollNo);
-  
-      
+
       let filteredContests = await students.map(async (student) => {
-        console.log('student: ', student);
+        console.log("student: ", student);
 
+        console.log("data", student.codechef?.newAllRating);
         return {
-            student,
-            contests: {
-                leetcode: filterLeetcode(startDate, endDate, student.leetcode?.data?.userContestRankingHistory || []),
-                codechef: filterCodechef(startDate, endDate, student.codechef?.newAllRating || []),
-                codeforces: filterCodeforces(startDate, endDate, student.codeforces?.attendedContests || [])
-            }
+          student,
+          contests: {
+            leetcode: filterLeetcode(
+              startDate,
+              endDate,
+              student.leetcode?.data?.userContestRankingHistory || []
+            ),
+            codechef: filterCodechef(
+              startDate,
+              endDate,
+              student.codechef.contests || []
+            ),
+            codeforces: filterCodeforces(
+              startDate,
+              endDate,
+              student.codeforces?.attendedContests || []
+            ),
+          },
         };
-    });
-    filteredContests = await Promise.all(filteredContests);
+      });
+      filteredContests = await Promise.all(filteredContests);
 
-  
       console.log("Filtered Contests:", filteredContests);
       setfilteredContests(filteredContests);
-  
+
       // Check if at least one contest exists
       const hasContests = filteredContests.some(
         (contest) =>
@@ -95,7 +109,7 @@ const BatchReport = ({ batchData, isFetched }) => {
           contest.contests.codechef.length > 0 ||
           contest.contests.codeforces.length > 0
       );
-  
+
       if (!hasContests) {
         toast.success("No contests found in the selected range!");
       } else {
@@ -107,7 +121,6 @@ const BatchReport = ({ batchData, isFetched }) => {
       toast.error("Something went wrong!");
     }
   };
-  
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
@@ -213,8 +226,16 @@ const BatchReport = ({ batchData, isFetched }) => {
           </div>
         </div>
       </form>
-      { isformSub &&
-        <BatchTable data={filteredContests} />}
+      {isformSub && (
+        <BatchTable
+          data={filteredContests}
+          filter={
+            selectedPlatforms.includes("All") || selectedPlatforms.length !== 1
+              ? "all"
+              : selectedPlatforms[0].toLowerCase()
+          }
+        />
+      )}
     </div>
   );
 };
