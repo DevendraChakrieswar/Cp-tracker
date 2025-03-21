@@ -38,12 +38,14 @@ function App() {
           <Route path='/batch-report' element={<BatchReport batchData={batchData} isFetched={isFetched}/>}></Route>
           <Route path='/student-report' element={<StudentReport batchData={batchData}/>}></Route>
 
+
+          <Route path='/cp-report' element={<CPReport/>}></Route>
           <Route path='/compare' element={<ComparePage />} />
 
         </Routes>
 
 
-        {/* <Footer/> */}
+        <Footer/>
       </div>
 
       

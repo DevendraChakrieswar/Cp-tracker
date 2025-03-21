@@ -1,135 +1,259 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState } from "react";
+import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, LineChart, Line, Legend, ResponsiveContainer
-} from 'recharts';
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 
 const CPReport = () => {
-  const [codechefUsername, setCodechefUsername] = useState('');
-  const [leetcodeUsername, setLeetcodeUsername] = useState('');
-  const [codeforcesUsername, setCodeforcesUsername] = useState('');
-  const [codechefData, setCodechefData] = useState(null);
-  const [leetcodeData, setLeetcodeData] = useState(null);
-  const [codeforcesData, setCodeforcesData] = useState(null);
+  const [name, setName] = useState("");
+  const [selectedPlatforms, setSelectedPlatforms] = useState([]);
+  const [platforms, setPlatforms] = useState({
+    codechef: false,
+    leetcode: false,
+    codeforces: false,
+  });
+  const [usernames, setUsernames] = useState({
+    codechef: "",
+    leetcode: "",
+    codeforces: "",
+  });
+  const [data, setData] = useState({
+    codechef: null,
+    leetcode: null,
+    codeforces: null,
+  });
   const [loading, setLoading] = useState(false);
+
+  const handlePlatformToggle = (platform) => {
+    setSelectedPlatforms((prev) => {
+      let newSelection;
+
+      if (platform === "All") {
+        newSelection = prev.includes("All")
+          ? []
+          : ["All", "Codechef", "Leetcode", "Codeforces"];
+      } else {
+        newSelection = prev.includes(platform)
+          ? prev.filter((p) => p !== platform)
+          : [...prev.filter((p) => p !== "All"), platform];
+
+        if (newSelection.length === 3) {
+          newSelection = ["All"];
+        }
+      }
+
+      setPlatforms({
+        codechef:
+          newSelection.includes("All") || newSelection.includes("Codechef"),
+        leetcode:
+          newSelection.includes("All") || newSelection.includes("Leetcode"),
+        codeforces:
+          newSelection.includes("All") || newSelection.includes("Codeforces"),
+      });
+
+      return newSelection;
+    });
+  };
+
+  const handleInputChange = (e, platform) => {
+    setUsernames((prev) => ({ ...prev, [platform]: e.target.value }));
+  };
 
   const fetchCPData = async () => {
     setLoading(true);
     try {
       const responses = await Promise.all([
-        codechefUsername ? axios.get(`http://localhost:5000/codechef/${codechefUsername}`) : Promise.resolve(null),
-        leetcodeUsername ? axios.get(`http://localhost:5000/leetcode/${leetcodeUsername}`) : Promise.resolve(null),
-        codeforcesUsername ? axios.get(`http://localhost:5000/codeforces/${codeforcesUsername}`) : Promise.resolve(null),
+        platforms.codechef && usernames.codechef
+          ? axios
+              .get(`http://localhost:5000/api/codechef/${usernames.codechef}`)
+              .catch(() => null)
+          : null,
+        platforms.leetcode && usernames.leetcode
+          ? axios
+              .get(`http://localhost:5000/api/leetcode/${usernames.leetcode}`)
+              .catch(() => null)
+          : null,
+        platforms.codeforces && usernames.codeforces
+          ? axios
+              .get(
+                `http://localhost:5000/api/codeforces/${usernames.codeforces}`
+              )
+              .catch(() => null)
+          : null,
       ]);
 
-      if (responses[0]?.data) setCodechefData(responses[0].data);
-      if (responses[1]?.data) setLeetcodeData(responses[1].data);
-      if (responses[2]?.data) setCodeforcesData(responses[2].data);
+      const codechefData = responses[0]?.data
+        ? Number(responses[0].data.problemsSolved)
+        : null;
+
+      // Fetch LeetCode total problems solved
+      const leetcodeData =
+        responses[1]?.data?.data?.matchedUser?.submitStatsGlobal
+          ?.acSubmissionNum?.[0]?.count || null;
+
+      const codeforcesData = responses[2]?.data
+        ? Number(responses[2].data.problemsSolved)
+        : null;
+
+      setData({
+        codechef: codechefData,
+        leetcode: leetcodeData,
+        codeforces: codeforcesData,
+      });
+      
+
+      toast.success("Data fetched successfully!");
     } catch (err) {
-      console.error('Error fetching CP data:', err);
+      toast.error("Error fetching data. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
-  // Data for Bar Chart - Problems Solved
   const problemData = [];
-  if (codechefData) problemData.push({ platform: 'CodeChef', problemsSolved: codechefData.problems_solved });
-  if (leetcodeData) problemData.push({ platform: 'LeetCode', problemsSolved: leetcodeData.problems_solved });
-  if (codeforcesData) problemData.push({ platform: 'Codeforces', problemsSolved: codeforcesData.problems_solved });
+  if (data.codechef !== null)
+    problemData.push({
+      platform: "CodeChef",
+      problems: data.codechef,
+    });
+  if (data.leetcode !== null)
+    problemData.push({
+      platform: "LeetCode",
+      problems: data.leetcode,
+    });
+  if (data.codeforces !== null)
+    problemData.push({
+      platform: "Codeforces",
+      problems: data.codeforces,
+    });
 
   return (
-    <div className="cp-report" style={{ padding: '20px' }}>
-      <h2>Competitive Programming Report</h2>
+    <div className="w-full h-full bg-gray-50">
+      <ToastContainer />
+      <div className="mx-auto max-w-6xl p-6">
+        {/* === FORM SECTION === */}
+        <div className="bg-white rounded-2xl shadow-sm p-6">
+          <h2 className="text-2xl font-bold text-black mb-4">
+            Competitive Programming Report
+          </h2>
 
-      {/* User Input Form */}
-      <div className="input-section" style={{ marginBottom: '20px' }}>
-        <input
-          type="text"
-          placeholder="CodeChef Username"
-          value={codechefUsername}
-          onChange={(e) => setCodechefUsername(e.target.value)}
-          style={{ marginRight: '10px' }}
-        />
-        <input
-          type="text"
-          placeholder="LeetCode Username"
-          value={leetcodeUsername}
-          onChange={(e) => setLeetcodeUsername(e.target.value)}
-          style={{ marginRight: '10px' }}
-        />
-        <input
-          type="text"
-          placeholder="Codeforces Username"
-          value={codeforcesUsername}
-          onChange={(e) => setCodeforcesUsername(e.target.value)}
-          style={{ marginRight: '10px' }}
-        />
-        <button onClick={fetchCPData}>Generate Report</button>
+          <label className="mb-2 block text-sm font-medium text-gray-600">
+            Your Name
+          </label>
+
+          <input
+            type="text"
+            placeholder="Your Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="w-[50%] px-4 py-2 border border-gray-300 rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+
+          {/* Platform Selection */}
+          <div className="mt-4">
+            <label className="mb-3 block text-sm font-medium text-gray-600">
+              Select Platform
+            </label>
+            <div className="flex flex-wrap gap-2 ">
+              {["All", "Codechef", "Codeforces", "Leetcode"].map((platform) => (
+                <button
+                  key={platform}
+                  type="button"
+                  onClick={() => handlePlatformToggle(platform)}
+                  className={`rounded-full px-3 py-1 text-sm transition-colors hover:cursor-pointer ${
+                    selectedPlatforms.includes(platform)
+                      ? "bg-blue-100 text-blue-700"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  }`}
+                >
+                  {platform}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Username Inputs */}
+          <div className="grid grid-cols-1 gap-4 mt-4">
+            {platforms.codechef && (
+              <div>
+                <label className="font-semibold block mb-1">
+                  CodeChef Username
+                </label>
+                <input
+                  type="text"
+                  placeholder="Enter CodeChef Username"
+                  value={usernames.codechef}
+                  onChange={(e) => handleInputChange(e, "codechef")}
+                  className="w-[50%] px-3 py-2 border border-gray-300 rounded-md"
+                />
+              </div>
+            )}
+            {platforms.leetcode && (
+              <div>
+                <label className="font-semibold block mb-1">
+                  LeetCode Username
+                </label>
+                <input
+                  type="text"
+                  placeholder="Enter LeetCode Username"
+                  value={usernames.leetcode}
+                  onChange={(e) => handleInputChange(e, "leetcode")}
+                  className="w-[50%] px-3 py-2 border border-gray-300 rounded-md"
+                />
+              </div>
+            )}
+            {platforms.codeforces && (
+              <div>
+                <label className="font-semibold block mb-1">
+                  Codeforces Username
+                </label>
+                <input
+                  type="text"
+                  placeholder="Enter Codeforces Username"
+                  value={usernames.codeforces}
+                  onChange={(e) => handleInputChange(e, "codeforces")}
+                  className="w-[50%] px-3 py-2 border border-gray-300 rounded-md"
+                />
+              </div>
+            )}
+          </div>
+
+          <button
+            onClick={fetchCPData}
+            className="w-[20%] mt-4 py-2 bg-green-600 hover:bg-green-700 rounded-md text-white transition"
+          >
+            {loading ? "Fetching Data..." : "Generate Report"}
+          </button>
+        </div>
+        {/* Visualization Section */}
+        {problemData.length > 0 && (
+          <div className="bg-white rounded-2xl shadow-sm p-6 mt-6">
+            <h2 className="text-2xl font-bold text-black mb-4">
+              Problem Solving Statistics
+            </h2>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={problemData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="platform" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="problems" fill="#4A90E2" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        )}
+        
       </div>
-
-      {loading && <p>Loading Competitive Programming Data...</p>}
-
-      {!loading && (codechefData || leetcodeData || codeforcesData) && (
-        <>
-          {/* Problems Solved Bar Chart */}
-          <h3>Problems Solved on Each Platform</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={problemData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="platform" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="problemsSolved" fill="#8884d8" />
-            </BarChart>
-          </ResponsiveContainer>
-
-          {/* CodeChef Contest Graph */}
-          {codechefData?.contests?.length > 0 && (
-            <>
-              <h3>CodeChef Contest Performance</h3>
-              <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={codechefData.contests}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="contestName" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Line type="monotone" dataKey="rating" stroke="#ff7300" />
-                </LineChart>
-              </ResponsiveContainer>
-            </>
-          )}
-
-          {/* Codeforces Contest Graph */}
-          {codeforcesData?.contests?.length > 0 && (
-            <>
-              <h3>Codeforces Contest Performance</h3>
-              <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={codeforcesData.contests}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="contestName" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Line type="monotone" dataKey="rating" stroke="#387908" />
-                </LineChart>
-              </ResponsiveContainer>
-            </>
-          )}
-
-          {/* LeetCode Raw Data */}
-          {leetcodeData && (
-            <>
-              <h3>LeetCode Data (Raw JSON)</h3>
-              <pre style={{ backgroundColor: '#f0f0f0', padding: '10px' }}>
-                {JSON.stringify(leetcodeData, null, 2)}
-              </pre>
-            </>
-          )}
-        </>
-      )}
     </div>
   );
 };

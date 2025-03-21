@@ -60,6 +60,8 @@ const CompareForm = () => {
     }
     setLoading(false);
   };
+  const lowerIsBetterMetrics = new Set(['topPercentageGlobalRank', 'countryRank']);
+
 
   return (
     
@@ -151,7 +153,7 @@ const CompareForm = () => {
           <button
             type="button"
             onClick={handleSubmit}
-            className="w-full md:w-auto bg-blue-600 text-white py-2 px-8 rounded-md hover:bg-blue-700 transition-colors"
+            className="w-full md:w-auto bg-green-600 hover:bg-green-700 hover:cursor-pointer text-white py-2 px-8 rounded-md transition-colors"
             disabled={loading}
           >
             {loading ? "Loading..." : "Compare"}
@@ -159,9 +161,9 @@ const CompareForm = () => {
         </div>
 
         {comparisonData && (
-          <div className="mt-8 p-6 bg-white rounded-lg shadow-md">
+          <div className="mt-8 p-6 bg-white rounded-lg">
             <h2 className="text-xl font-bold mb-4">Comparison Results</h2>
-            <table className="w-full border-collapse border border-gray-200">
+            <table className="w-full border-collapse">
               <thead>
                 <tr className="bg-gray-100">
                   <th className="p-2 border">Metric</th>

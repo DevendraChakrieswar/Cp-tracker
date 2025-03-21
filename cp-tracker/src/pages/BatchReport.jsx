@@ -242,7 +242,7 @@ const BatchReport = ({ batchData, isFetched }) => {
             </div>
 
             {/* ✅ Submit Button for Data Submission */}
-            <div className="flex mt-6 w-full gap-4">
+            <div className="flex mt-6 w-[50%] gap-4">
               <button type="submit" className="w-1/2 rounded-md bg-green-600 px-4 py-2 text-white hover:bg-green-700 hover:cursor-pointer">Get Report</button>
               {/* {isformSub && (
                 <button type="button" onClick={downloadExcel} className="w-1/2 rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">Download Excel</button>
