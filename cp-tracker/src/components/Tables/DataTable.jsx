@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 
-const DataTable = ({ data, isStudentReport = false, filter = "all" }) => {
+const DataTable = ({ data, isStudentReport = false, filter = "all",  }) => {
   const [hasContests, setHasContests] = useState(false);
 
   const formatDate = (dateString) => {
