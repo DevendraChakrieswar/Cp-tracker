@@ -1,23 +1,24 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import "../Home.css";
-import homebackgroundImage from "../assets/images/dsa.jpg";
+import homebackgroundImage from "../assets/images/banner-background.webp";
 
 const TypingText = ({ text }) => {
   const [displayText, setDisplayText] = useState("");
   const [showCursor, setShowCursor] = useState(true);
-  const typingCompleted = useRef(false);
+  const indexRef = useRef(0);
 
   useEffect(() => {
-    if (typingCompleted.current) return;
-    typingCompleted.current = true;
-
-    let index = 0;
     const typingInterval = setInterval(() => {
-      setDisplayText(text.slice(0, index + 1));
-      index++;
+      setDisplayText(text.slice(0, indexRef.current + 1));
+      indexRef.current++;
 
-      if (index === text.length) clearInterval(typingInterval);
+      if (indexRef.current === text.length) {
+        setTimeout(() => {
+          indexRef.current = 0;
+          setDisplayText("");
+        }, 1000);
+      }
     }, 150);
 
     const cursorInterval = setInterval(() => {
@@ -31,7 +32,7 @@ const TypingText = ({ text }) => {
   }, [text]);
 
   return (
-    <div className="bubble central font-mono font-bold hover:cursor-default">
+    <div className="bubble cn central font-mono font-bold hover:cursor-pointer ">
       {displayText}
       <span className={`cursor ${showCursor ? "visible" : "hidden"}`}>|</span>
     </div>
@@ -49,15 +50,13 @@ const Home = () => {
 
   return (
     <div
-      className={`w-full h-full flex flex-col justify-center items-center (1s fade-in) */
- ${
-        imageLoaded ? "opacity-100" : "opacity-0"
-      }`}
+      className={`w-full h-full flex flex-col justify-center items-center
+        ${imageLoaded ? "opacity-100" : "opacity-0"}`}
       style={{
         backgroundImage: imageLoaded ? `url(${homebackgroundImage})` : "none",
         backgroundSize: "cover",
         backgroundPosition: "center",
-        backgroundColor: "#3A0784", // Placeholder color
+        backgroundColor: "#3A0784",
       }}
     >
       <div className="bubble-container">

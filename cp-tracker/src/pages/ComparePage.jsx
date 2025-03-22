@@ -145,7 +145,7 @@ const CompareForm = () => {
           <button
             type="button"
             onClick={handleSubmit}
-            className="w-full md:w-auto bg-green-600 hover:bg-green-700 text-white py-2 px-8 rounded-md transition-colors"
+            className="w-full md:w-auto bg-green-600 hover:bg-green-700 text-white py-2 px-8 hover:cursor-pointer rounded-md transition-colors"
             disabled={loading}
           >
             {loading ? "Loading..." : "Compare"}
