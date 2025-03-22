@@ -3,7 +3,6 @@
 
 /* Main Container */
 .bubble-container {
-    
     position: relative;
     display: flex;
     justify-content: center;
@@ -48,10 +47,10 @@
 }
 
 /* Different Colors */
-.bubble1 { background: #ff6b6b; animation-delay: 0.5s; }
+.bubble1 { background: #ff6b6bd1; animation-delay: 0.5s; }
 .bubble2 { background: #a121e1ce; animation-delay: 0.7s; }
-.bubble3 { background: #1dd1a1; animation-delay: 0.6s; }
-.bubble4 { background: #06cdeb; animation-delay: 0.8s; }
+.bubble3 { background: #1dd1a1d6; animation-delay: 0.6s; }
+.bubble4 { background: #06cdebd4; animation-delay: 0.8s; }
 
 /* Smooth Bubble Emerge Animation */
 @keyframes emerge {
@@ -69,25 +68,25 @@
 /* Floating Animations */
 @keyframes float1 {
     0% { transform: translate(var(--x), var(--y)) translateY(0); }
-    50% { transform: translate(calc(var(--x) + 8px), calc(var(--y) - 4px)); }
+    50% { transform: translate(calc(var(--x) + 10px), calc(var(--y) - 6px)); }
     100% { transform: translate(var(--x), var(--y)) translateY(0); }
 }
 
 @keyframes float2 {
     0% { transform: translate(var(--x), var(--y)) translateY(0); }
-    50% { transform: translate(calc(var(--x) - 8px), calc(var(--y) + 6px)); }
+    50% { transform: translate(calc(var(--x) - 10px), calc(var(--y) + 8px)); }
     100% { transform: translate(var(--x), var(--y)) translateY(0); }
 }
 
 @keyframes float3 {
     0% { transform: translate(var(--x), var(--y)) translateY(0); }
-    50% { transform: translate(calc(var(--x) + 9px), calc(var(--y) - 5px)); }
+    50% { transform: translate(calc(var(--x) + 12px), calc(var(--y) - 7px)); }
     100% { transform: translate(var(--x), var(--y)) translateY(0); }
 }
 
 @keyframes float4 {
     0% { transform: translate(var(--x), var(--y)) translateY(0); }
-    50% { transform: translate(calc(var(--x) - 9px), calc(var(--y) + 5px)); }
+    50% { transform: translate(calc(var(--x) - 12px), calc(var(--y) + 7px)); }
     100% { transform: translate(var(--x), var(--y)) translateY(0); }
 }
 
