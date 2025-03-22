@@ -234,7 +234,7 @@ const CPReport = () => {
 
           <button
             onClick={fetchCPData}
-            className="w-[20%] mt-4 py-2 bg-green-600 hover:bg-green-700 rounded-md text-white transition"
+            className="w-[20%] mt-4 py-2 bg-green-600 hover:bg-green-700 rounded-md text-white hover:cursor-pointer transition"
           >
             {loading ? "Fetching Data..." : "Generate Report"}
           </button>

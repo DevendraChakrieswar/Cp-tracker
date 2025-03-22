@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import fetchData from "../utils/fetchFromDB/fetchingIndviual";
 
-
 const CompareForm = () => {
   const [persons, setPersons] = useState({
     person1: {
@@ -60,12 +59,15 @@ const CompareForm = () => {
     }
     setLoading(false);
   };
-  const lowerIsBetterMetrics = new Set(['topPercentageGlobalRank', 'countryRank']);
 
+  // Metrics where lower values are better
+  const lowerIsBetterMetrics = new Set([
+    "topPercentage",
+    "GlobalRank",
+    "countryRank",
+  ]);
 
   return (
-    
-
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="bg-gray-100 p-6 shadow-sm max-w-6xl mx-auto">
         <h1 className="text-2xl font-bold mb-6">Compare</h1>
@@ -88,9 +90,7 @@ const CompareForm = () => {
                   <input
                     type="text"
                     value={persons[personKey].name}
-                    onChange={(e) =>
-                      handleNameChange(personKey, e.target.value)
-                    }
+                    onChange={(e) => handleNameChange(personKey, e.target.value)}
                     className="w-full p-2 border rounded-md"
                     placeholder="Name"
                   />
@@ -110,9 +110,7 @@ const CompareForm = () => {
                           <input
                             type="checkbox"
                             checked={checked}
-                            onChange={() =>
-                              handlePlatformChange(personKey, platform)
-                            }
+                            onChange={() => handlePlatformChange(personKey, platform)}
                             className="h-4 w-4 text-blue-600"
                           />
                           <span className="capitalize">{platform}</span>
@@ -133,11 +131,7 @@ const CompareForm = () => {
                           type="text"
                           value={persons[personKey].usernames[platform]}
                           onChange={(e) =>
-                            handleUsernameChange(
-                              personKey,
-                              platform,
-                              e.target.value
-                            )
+                            handleUsernameChange(personKey, platform, e.target.value)
                           }
                           className="w-full p-2 border rounded-md"
                         />
@@ -192,6 +186,16 @@ const CompareForm = () => {
                           const value2 =
                             comparisonData.person2[platform]?.[metric] ?? 0;
 
+                          const person1Wins =
+                            lowerIsBetterMetrics.has(metric)
+                              ? value1 < value2
+                              : value1 > value2;
+
+                          const person2Wins =
+                            lowerIsBetterMetrics.has(metric)
+                              ? value2 < value1
+                              : value2 > value1;
+
                           return (
                             <tr key={`${platform}-${metric}`} className="border">
                               <td className="p-2 border capitalize">
@@ -199,11 +203,11 @@ const CompareForm = () => {
                               </td>
                               <td className="p-2 border">
                                 {value1}
-                                {value1 > value2 ? " 🏅" : ""}
+                                {person1Wins ? " 🏅" : ""}
                               </td>
                               <td className="p-2 border">
                                 {value2}
-                                {value2 > value1 ? " 🏅" : ""}
+                                {person2Wins ? " 🏅" : ""}
                               </td>
                             </tr>
                           );
@@ -218,7 +222,6 @@ const CompareForm = () => {
         )}
       </div>
     </div>
-    
   );
 };
 
