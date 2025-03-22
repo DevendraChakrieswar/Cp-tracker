@@ -19,10 +19,13 @@ const fetchLeetCodeData = async (username) => {
             return {
                 contestName: contest.contest.title,
                 rating: contest.rating,
+                ranking: contest.ranking,
                 problemsSolved: contest.problemsSolved,
                 contestDate: new Date(contest.contest.startTime * 1000).toLocaleDateString(), // Converts epoch to readable date
             };
         });
+
+        console.log("contets: ", contests);
 
         return {
             username: userInfo?.username || username,

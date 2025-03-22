@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import fetchLeetCodeData from "../../utils/fetchFromDB/fetchLeetcode";
+import processContestData from "../../utils/fetchFromDB/fetchCodeChef"; // Ensure correct import
+
+// Function to remove brackets and text inside them
+const cleanContestName = (name) => name.replace(/\s*\(.*?\)\s*/g, "").trim();
 
 const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
@@ -8,7 +11,7 @@ const CustomTooltip = ({ active, payload }) => {
             <div className="bg-white p-2 shadow-md rounded-md text-sm">
                 <p className="font-semibold">{payload[0].payload.contestName}</p>
                 <p>Date: {payload[0].payload.formattedDate}</p>
-                <p>Ranking: {payload[0].payload.ranking}</p>
+                <p>Rating: {payload[0].payload.rating}</p>
                 <p>Problems Solved: {payload[0].payload.problemsSolved}</p>
             </div>
         );
@@ -16,16 +19,16 @@ const CustomTooltip = ({ active, payload }) => {
     return null;
 };
 
-const LeetCodeContestChart = ({ username }) => {
+const CodeChefContestChart = ({ username }) => {
     const [contestData, setContestData] = useState([]);
 
     useEffect(() => {
         const fetchData = async () => {
-            const data = await fetchLeetCodeData(username);
-            if (data && data.contests) {
+            const data = await processContestData(username);
+            if (data.length > 0) {
                 // Convert "DD/MM/YYYY" to "YYYY-MM-DD" for correct sorting
-                const parsedData = data.contests.map(contest => {
-                    const [day, month, year] = contest.contestDate.split("/").map(Number);
+                const parsedData = data.map(contest => {
+                    const [day, month, year] = contest.date.split("/").map(Number);
                     const formattedDate = new Date(year, month - 1, day).toLocaleDateString("en-GB", {
                         day: "2-digit",
                         month: "short",
@@ -34,14 +37,15 @@ const LeetCodeContestChart = ({ username }) => {
 
                     return {
                         ...contest,
-                        dateObj: new Date(year, month - 1, day), // Correct JS Date format
+                        contestName: cleanContestName(contest.contestName), // Clean contest name
+                        dateObj: new Date(year, month - 1, day),
                         formattedDate, // Use this for X-axis
-                        ranking: contest.rating, // Assuming rating represents ranking
                     };
                 });
 
                 // Sort by dateObj in ascending order
                 const sortedData = parsedData.sort((a, b) => a.dateObj - b.dateObj);
+                console.log("Sorted Data:", sortedData);
 
                 setContestData(sortedData);
             }
@@ -51,11 +55,11 @@ const LeetCodeContestChart = ({ username }) => {
 
     return (
         <div className="p-4 bg-white shadow-lg rounded-lg w-full">
-            <h2 className="text-xl font-semibold text-center mb-4">LeetCode Contest Performance</h2>
+            <h2 className="text-xl font-semibold text-center mb-4">CodeChef Contest Performance</h2>
             <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={contestData} margin={{ top: 10, right: 30, left: 20, bottom: 50 }}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    
+
                     {/* X-Axis: Display contest date */}
                     <XAxis 
                         dataKey="formattedDate" 
@@ -65,18 +69,29 @@ const LeetCodeContestChart = ({ username }) => {
                         dy={10} 
                     />
                     
-                    {/* Y-Axis: Set a proper range */}
-                    <YAxis domain={[
-                        Math.min(...contestData.map(c => c.ranking)) - 50, 
-                        Math.max(...contestData.map(c => c.ranking)) + 50
-                    ]} />
+                    {/* Y-Axis: Rating */}
+                    <YAxis 
+                        label={{ value: "Rating", angle: -90, position: "insideLeft" }} 
+                        domain={[
+                            Math.min(...contestData.map(c => c.rating)) - 50, 
+                            Math.max(...contestData.map(c => c.rating)) + 50
+                        ]}
+                    />
                     
                     <Tooltip content={<CustomTooltip />} />
-                    <Line type="monotone" dataKey="ranking" stroke="#8884d8" strokeWidth={2} dot={{ r: 3 }} />
+                    
+                    {/* Line Chart for Rating */}
+                    <Line 
+                        type="monotone" 
+                        dataKey="rating" 
+                        stroke="#FF5733" 
+                        strokeWidth={2} 
+                        dot={{ r: 3 }} 
+                    />
                 </LineChart>
             </ResponsiveContainer>
         </div>
     );
 };
 
-export default LeetCodeContestChart;
+export default CodeChefContestChart;

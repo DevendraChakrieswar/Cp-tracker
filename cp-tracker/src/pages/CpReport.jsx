@@ -12,6 +12,8 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import LeetCodeContestChart from "../components/Charts/leetcodeChart";
+import CodeChefContestChart from "../components/Charts/CodeChefChart";
 
 const CPReport = () => {
   const [name, setName] = useState("");
@@ -32,6 +34,7 @@ const CPReport = () => {
     codeforces: null,
   });
   const [loading, setLoading] = useState(false);
+  const [isformSub, setisformSub] = useState(false);
 
   const handlePlatformToggle = (platform) => {
     setSelectedPlatforms((prev) => {
@@ -110,6 +113,8 @@ const CPReport = () => {
         codeforces: codeforcesData,
       });
       
+      setisformSub(true);
+      console.log(isformSub);
 
       toast.success("Data fetched successfully!");
     } catch (err) {
@@ -252,8 +257,22 @@ const CPReport = () => {
             </ResponsiveContainer>
           </div>
         )}
-        
+        {platforms.leetcode && usernames.leetcode && isformSub && (
+          <div className="bg-white w-full rounded-2xl shadow-sm p-6 mt-6">
+            <LeetCodeContestChart username={usernames.leetcode} />
+          </div>
+        )}
+        {platforms.codechef && usernames.codechef && isformSub && (
+             <div className="bg-white w-full rounded-2xl shadow-sm p-6 mt-6">
+             <CodeChefContestChart username={usernames.codechef} />
+         </div>      
+        )
+          
+        }
+
+
       </div>
+        
     </div>
   );
 };
