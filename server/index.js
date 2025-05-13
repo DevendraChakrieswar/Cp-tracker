@@ -6,6 +6,10 @@ const codingRoutes = require('./routes/codingroutes');
 const app = express();
 app.use(cors());
 
+app.get("/",(req,res)=>{
+    console.log("hit the backend url");
+    res.send("hit default url");
+});
 app.use('/api', codingRoutes);
 
 const PORT = process.env.PORT || 5000;
