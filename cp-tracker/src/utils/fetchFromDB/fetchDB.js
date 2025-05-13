@@ -1,9 +1,10 @@
+
 async function fetchFromDB(setBatchData) {
     try {
       const response = await fetch(`http://localhost:5000/api/all-users`);
   
       if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+        throw new Error(`HTTP error! Status: ${response.status}`); 
       }
   
       const studentsData = await response.json();
